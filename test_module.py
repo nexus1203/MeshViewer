@@ -23,8 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Load mesh and display
         mesh = trimesh.load('base.stl')
         print(mesh.vertices.shape)
-        # Simplify the mesh
-        self.mesh = mesh.simplify_quadric_decimation(50000)
+        
         self.mesh_inst = self.viewer.add_mesh(self.mesh, color=(0,0,255,255), pos=[0,0,0])
         text = self.viewer.add_texticon('Hello', pos=[0,0,0], color=(255,0,0,255), font=QtGui.QFont('Times New Roman', 20))
 

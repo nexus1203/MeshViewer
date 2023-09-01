@@ -121,3 +121,9 @@ class MeshViewer(QtWidgets.QWidget):
             image (gl.GLImageItem): image to be removed
         """
         self.viewer.removeItem(image)
+        
+    def set_camera_angle(self,distance=2, elevation=0, azimuth=0):
+        """ Set camera angle to view the scene
+        """
+        
+        self.viewer.setCameraPosition(distance=distance, elevation=elevation, azimuth=azimuth)

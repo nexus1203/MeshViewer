@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 import trimesh
 
 
-class MeshViewer:
+class MeshViewer(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         """ Create a GLViewWidget and use it to display a robot model, meshes, trajectories and text icons.
@@ -14,7 +14,12 @@ class MeshViewer:
             robot (rtb., optional): _description_. Defaults to None.
             parent (_type_, optional): parent class of GLViewWidget. Defaults to None.
         """
-        self.viewer = gl.GLViewWidget(parent=parent)
+        super().__init__(parent)
+        self.viewer = gl.GLViewWidget(self)
+        
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addWidget(self.viewer)
+        self.setLayout(layout)
         
         
 

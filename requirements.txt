@@ -1,0 +1,5 @@
+numpy==1.25.2
+PyQt5==5.15.9
+PyQt5_sip==12.12.2
+pyqtgraph==0.13.3
+trimesh==3.23.5

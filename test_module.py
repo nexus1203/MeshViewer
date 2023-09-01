@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from PyQt5 import QtWidgets, QtCore, QtGui
 import pyqtgraph.opengl as gl
@@ -5,35 +6,44 @@ import time
 import trimesh
 from MeshViewer.display import MeshViewer
 
-app = QtWidgets.QApplication([])
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-viewer = MeshViewer()
-viewer.set_background_color((0,0,0,1))
-viewer.viewer.show()
+        # Central Widget
+        self.central_widget = QtWidgets.QWidget(self)
+        self.setCentralWidget(self.central_widget)
+        self.layout = QtWidgets.QVBoxLayout(self.central_widget)
 
-mesh = trimesh.load('base.stl')
-mesh_inst = viewer.add_mesh(mesh, color=(0,0,255,255), pos=[0,0,0])
+        # MeshViewer setup
+        self.viewer = MeshViewer(self.central_widget)
+        self.viewer.set_background_color((0,0,0,1))
+        self.layout.addWidget(self.viewer.viewer)
 
-text = viewer.add_texticon('Hello', pos=[0,0,0.5], color=(255,0,0,255), font=QtGui.QFont('Times New Roman', 20))
+        # Load mesh and display
+        mesh = trimesh.load('base.stl')
+        print(mesh.vertices.shape)
+        # Simplify the mesh
+        self.mesh = mesh.simplify_quadric_decimation(50000)
+        self.mesh_inst = self.viewer.add_mesh(self.mesh, color=(0,0,255,255), pos=[0,0,0])
+        text = self.viewer.add_texticon('Hello', pos=[0,0,0], color=(255,0,0,255), font=QtGui.QFont('Times New Roman', 20))
 
+        # Timer for animation
+        self.index = 0
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.update_animation)
+        self.timer.start(50)
 
-index = 0
-def update():
-    start = time.perf_counter()
-    global index
-    viewer.update_mesh(mesh_inst,mesh, pos=[index/200,0,0, 0,0,0])
-    index += 1
-    if index > 50:
-        index = 0
-    print(time.perf_counter() - start)
-
-
-t2 = QtCore.QTimer()
-t2.timeout.connect(update)
-t2.start(50)
+    def update_animation(self):
+        start = time.perf_counter()
+        self.viewer.update_mesh(self.mesh_inst, self.mesh, pos=[self.index/20,0,0, 0,0,0])
+        self.index += 1
+        if self.index > 50:
+            self.index = 0
+        print(time.perf_counter() - start)
 
 if __name__ == '__main__':
-
-    import sys
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        QtWidgets.QApplication.instance().exec_()
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
